@@ -1,0 +1,35 @@
+#kubectl run n1 --image=nginx  --port=80
+#kubectl expose pod n1 --port=80 --target-port=80  --name=n1s  --type=LoadBalancer
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+apiVersion: v1
+kind: Pod
+metadata:
+  name: n1
+  labels:
+    app: webproxy
+  namespace: staging
+spec:
+ containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+  labels:
+    app: webproxy
+  namespace: staging
+spec:
+  selector:
+    app: webproxy
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
